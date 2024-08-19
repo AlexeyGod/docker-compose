@@ -1,3 +1,5 @@
+# nginx + php + postgreesSQL + phpmyadmin + rabbitMQ
+
 ```
 C:\Windows\System32\drivers\etc\hosts
 ```
@@ -13,3 +15,6 @@ C:\Windows\System32\drivers\etc\hosts
 admin
 admin
 ```
+### Yii
+
+nginx configured for Yii2 basic app (www/yii.loc.web)
