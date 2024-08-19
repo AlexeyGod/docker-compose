@@ -17,4 +17,4 @@ admin
 ```
 ### Yii
 
-nginx configured for Yii2 basic app (www/yii.loc.web)
+nginx configured for Yii2 basic app (www/yii.loc/web)
