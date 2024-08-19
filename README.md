@@ -8,4 +8,8 @@ C:\Windows\System32\drivers\etc\hosts
 127.0.0.1 yii.loc
 127.0.0.1 rabbitmq
 ```
-
+### Rabbit MQ
+```
+admin
+admin
+```
