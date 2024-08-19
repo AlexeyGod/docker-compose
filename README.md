@@ -1,4 +1,6 @@
-`C:\Windows\System32\drivers\etc\hosts
+```
+C:\Windows\System32\drivers\etc\hosts
+```
 
 ### My sites (folder in: ./www/)
 ```
