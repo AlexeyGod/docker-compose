@@ -1,0 +1,94 @@
+# Сеть
+networks:
+    mynet:
+        driver: bridge
+
+# Список сервисов (контейнеров)
+services:
+    dev-nginx:
+        
+        # используем последний стабильный образ nginx
+        image: nginx:latest
+        environment:
+            TZ: "Europe/Moscow"
+        # маршрутизируем порты
+        ports:
+            - "80:80"
+            - "443:443"
+        # монтируем директории, слева директории на основной машине, справа - куда они монтируются в контейнере
+        volumes:
+            - ./nginx:/etc/nginx/conf.d
+            - ./www:/var/www
+            - ./logs/nginx:/var/log/nginx
+        # nginx должен общаться с php контейнером
+        networks:
+            - mynet
+        depends_on:
+            - dev-php
+    dev-php:
+        container_name: dev-php
+        # у нас свой образ для PHP, указываем путь к нему и говорим что его надо собрать
+        build:
+            context: ./images/php
+        # монтируем директорию с проектами
+        volumes:
+            - ./www:/var/www
+        networks:
+            - mynet
+        ports:
+            - "9000:9000"
+    dev-db:
+        
+        image: postgres:latest
+        restart: always
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        # or set shared memory limit when deploy via swarm stack
+        #volumes:
+        #  - type: tmpfs
+        #    target: /dev/shm
+        #    tmpfs:
+        #      size: 134217728 # 128*2^20 bytes = 128Mb
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: test-database
+          PGDATA: /var/lib/postgresql/data/pgdata
+        ports:
+          - "5432:5432"
+        volumes:
+          - "./database:/var/lib/postgresql/data"
+        networks:
+            - mynet
+
+    dev-phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        
+        ports:
+            - 7000:80
+        networks:
+            - mynet
+    
+    dev-rabbitmq:
+        image: rabbitmq:3.10.7-management
+        
+        ports:
+           - "5672:5672/tcp"    # "5672:5672" specifies the port of the queue.
+           - "15672:15672"  # "15672:15672" specifies the port of the management plugin.           
+        hostname: rabbitmq
+        restart: always
+        volumes:
+           - "./rabbitmq/data:/var/lib/rabbitmq" #data
+           - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/conf.d/advanced.conf #config
+        #    - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.confe
+
+        # not working
+        #environment:
+        #  RABBITMQ_ERLANG_COOKIE: SWQOKODSQALRPCLNMEQG
+        #  RABBITMQ_DEFAULT_USER: admin
+        #  RABBITMQ_DEFAULT_PASSWORD: admin
+        #  RABBITMQ_DEFAULT_VHOST: /
+        
+        networks:
+            - mynet
+    
